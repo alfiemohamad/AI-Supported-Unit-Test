@@ -1,5 +1,7 @@
 # Secure To-Do List API
 
+[![codecov](https://codecov.io/gh/alfiemohamad/AI-Supported-Unit-Test/branch/main/graph/badge.svg)](https://codecov.io/gh/alfiemohamad/AI-Supported-Unit-Test)
+
 ## Overview
 A RESTful To-Do List API with JWT authentication, PostgreSQL storage, and full CRUD for lists and tasks. Includes OpenAPI/Swagger docs and a ready-to-use Postman collection.
 
