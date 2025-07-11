@@ -143,10 +143,39 @@ describe('Todo API', () => {
     expect(res.status).toBe(204);
   });
 
-  it('should return 404 for non-existent task', async () => {
+  it('should return 404 if get task by id not found', async () => {
     const res = await request(app)
       .get('/tasks/999999')
       .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if update task not owned by user', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'taskother2', email: 'taskother2@example.com', password: 'testpass123' });
+    const resLogin = await request(app)
+      .post('/auth/login')
+      .send({ email: 'taskother2@example.com', password: 'testpass123' });
+    const token2 = resLogin.body.token;
+    const res = await request(app)
+      .put(`/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${token2}`)
+      .send({ title: 'Hacked' });
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if delete task not owned by user', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'taskother3', email: 'taskother3@example.com', password: 'testpass123' });
+    const resLogin = await request(app)
+      .post('/auth/login')
+      .send({ email: 'taskother3@example.com', password: 'testpass123' });
+    const token2 = resLogin.body.token;
+    const res = await request(app)
+      .delete(`/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${token2}`);
     expect(res.status).toBe(404);
   });
 
@@ -374,6 +403,45 @@ describe('Todo API', () => {
   it('should return 400 if update list with missing name', async () => {
     const res = await request(app)
       .put(`/lists/${listId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 404 if get task by id not owned by user', async () => {
+    // Register user2
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'taskother', email: 'taskother@example.com', password: 'testpass123' });
+    const resLogin = await request(app)
+      .post('/auth/login')
+      .send({ email: 'taskother@example.com', password: 'testpass123' });
+    const token2 = resLogin.body.token;
+    const res = await request(app)
+      .get(`/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${token2}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if update non-existent task', async () => {
+    const res = await request(app)
+      .put('/tasks/999999')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Not Exist' });
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if delete non-existent task', async () => {
+    const res = await request(app)
+      .delete('/tasks/999999')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 400 if update task with missing title', async () => {
+    const res = await request(app)
+      .put(`/tasks/${taskId}`)
       .set('Authorization', `Bearer ${token}`)
       .send({});
     expect(res.status).toBe(400);

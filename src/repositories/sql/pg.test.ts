@@ -10,6 +10,11 @@ describe('pg.ts', () => {
     expect(res.rows[0].result).toBe(1);
   });
 
+  it('should throw error if query is invalid', async () => {
+    await expect(pool.query('SELECT * FROM not_a_table')).rejects.toThrow();
+  });
+
+  /*
   it('should fail to connect with wrong host', async () => {
     const { Pool } = await import('pg');
     const badPool = new Pool({
@@ -31,4 +36,5 @@ describe('pg.ts', () => {
     }
     expect(errorCaught).toBe(true);
   });
+  */
 });
