@@ -38,7 +38,15 @@ const router = Router();
 router.post('/register', async (req: Request, res: Response): Promise<void> => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) {
-    res.status(400).json({ error: 'Username, email, and password required' });
+    res.status(400).json({ error: 'All fields are required' });
+    return;
+  }
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    res.status(400).json({ error: 'Invalid email format' });
+    return;
+  }
+  if (password.length < 6) {
+    res.status(400).json({ error: 'Password too short' });
     return;
   }
   const existingUsername = await sqlUserRepository.findByUsername(username);
@@ -97,8 +105,16 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
     res.status(400).json({ error: 'Email and password required' });
     return;
   }
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    res.status(400).json({ error: 'Invalid email format' });
+    return;
+  }
   const user = await sqlUserRepository.findByEmail(email);
   if (!user) {
+    res.status(401).json({ error: 'Invalid credentials' });
+    return;
+  }
+  if (password.length < 6) {
     res.status(401).json({ error: 'Invalid credentials' });
     return;
   }

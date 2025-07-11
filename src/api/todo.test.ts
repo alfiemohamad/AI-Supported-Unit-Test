@@ -161,4 +161,155 @@ describe('Todo API', () => {
       .send({ title: 'No Token', description: '', completed: false });
     expect(res.status).toBe(401);
   });
+
+  it('should return 400 if create list with missing name', async () => {
+    const res = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if update list with missing name', async () => {
+    // Buat list baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For Update' });
+    const updateRes = await request(app)
+      .put(`/lists/${listRes.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(updateRes.status).toBe(400);
+    expect(updateRes.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if create task with missing fields', async () => {
+    // Buat list baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For Task Error' });
+    const res = await request(app)
+      .post(`/lists/${listRes.body.id}/tasks`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if update task with missing fields', async () => {
+    // Buat list dan task baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For Task Update' });
+    const taskRes = await request(app)
+      .post(`/lists/${listRes.body.id}/tasks`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Task', description: 'desc', completed: false });
+    const res = await request(app)
+      .put(`/tasks/${taskRes.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 401 if update list without token', async () => {
+    // Buat list baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For 401' });
+    const res = await request(app)
+      .put(`/lists/${listRes.body.id}`)
+      .send({ name: 'No Token' });
+    expect(res.status).toBe(401);
+  });
+
+  it('should return 401 if delete list without token', async () => {
+    // Buat list baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For 401 Delete' });
+    const res = await request(app)
+      .delete(`/lists/${listRes.body.id}`);
+    expect(res.status).toBe(401);
+  });
+
+  it('should return 401 if update task without token', async () => {
+    // Buat list dan task baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For Task 401' });
+    const taskRes = await request(app)
+      .post(`/lists/${listRes.body.id}/tasks`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Task', description: 'desc', completed: false });
+    const res = await request(app)
+      .put(`/tasks/${taskRes.body.id}`)
+      .send({ title: 'No Token', completed: true });
+    expect(res.status).toBe(401);
+  });
+
+  it('should return 401 if delete task without token', async () => {
+    // Buat list dan task baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For Task 401 Delete' });
+    const taskRes = await request(app)
+      .post(`/lists/${listRes.body.id}/tasks`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Task', description: 'desc', completed: false });
+    const res = await request(app)
+      .delete(`/tasks/${taskRes.body.id}`);
+    expect(res.status).toBe(401);
+  });
+
+  it('should return 401 if get tasks in list without token', async () => {
+    // Buat list baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For Task 401 Get' });
+    const res = await request(app)
+      .get(`/lists/${listRes.body.id}/tasks`);
+    expect(res.status).toBe(401);
+  });
+
+  it('should return 401 if get task by id without token', async () => {
+    // Buat list dan task baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For Task 401 Get By Id' });
+    const taskRes = await request(app)
+      .post(`/lists/${listRes.body.id}/tasks`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Task', description: 'desc', completed: false });
+    const res = await request(app)
+      .get(`/tasks/${taskRes.body.id}`);
+    expect(res.status).toBe(401);
+  });
+
+  it('should return 401 if update task without token', async () => {
+    // Buat list dan task baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List For Task 401 Update' });
+    const taskRes = await request(app)
+      .post(`/lists/${listRes.body.id}/tasks`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Task', description: 'desc', completed: false });
+    const res = await request(app)
+      .put(`/tasks/${taskRes.body.id}`)
+      .send({ title: 'No Token', completed: true });
+    expect(res.status).toBe(401);
+  });
 });

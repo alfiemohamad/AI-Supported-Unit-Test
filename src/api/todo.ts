@@ -223,6 +223,10 @@ router.get('/lists', authMiddleware, async (req: Request, res: Response): Promis
 router.post('/lists', authMiddleware, async (req: Request, res: Response): Promise<void> => {
   const user = (req as any).user;
   const { name } = req.body;
+  if (!name || typeof name !== 'string' || !name.trim()) {
+    res.status(400).json({ error: 'Name is required' });
+    return;
+  }
   const list = await listService.createList({ user_id: user.id, name });
   res.status(201).json(list);
 });
@@ -238,6 +242,11 @@ router.put('/lists/:id', authMiddleware, async (req: Request, res: Response): Pr
   const user = (req as any).user;
   const list = await listService.getListById(Number(req.params.id));
   if (!list || list.user_id !== user.id) { res.status(404).json({ error: 'Not found' }); return; }
+  const { name } = req.body;
+  if (!name || typeof name !== 'string' || !name.trim()) {
+    res.status(400).json({ error: 'Name is required' });
+    return;
+  }
   const updated = await listService.updateList(list.id, req.body);
   res.json(updated);
 });
@@ -264,6 +273,10 @@ router.post('/lists/:listId/tasks', authMiddleware, async (req: Request, res: Re
   const list = await listService.getListById(Number(req.params.listId));
   if (!list || list.user_id !== user.id) { res.status(404).json({ error: 'Not found' }); return; }
   const { title, description, completed } = req.body;
+  if (!title || typeof title !== 'string' || !title.trim()) {
+    res.status(400).json({ error: 'Title is required' });
+    return;
+  }
   const task = await taskService.createTask({ list_id: list.id, title, description, completed: !!completed });
   res.status(201).json(task);
 });
@@ -283,6 +296,11 @@ router.put('/tasks/:id', authMiddleware, async (req: Request, res: Response): Pr
   const list = await listService.getListById(task.list_id);
   const user = (req as any).user;
   if (!list || list.user_id !== user.id) { res.status(404).json({ error: 'Not found' }); return; }
+  const { title } = req.body;
+  if (!title || typeof title !== 'string' || !title.trim()) {
+    res.status(400).json({ error: 'Title is required' });
+    return;
+  }
   const updated = await taskService.updateTask(task.id, req.body);
   res.json(updated);
 });

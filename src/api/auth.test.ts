@@ -76,6 +76,72 @@ describe('Auth API', () => {
     expect(res.body).toHaveProperty('error');
   });
 
+  it('should return 400 if register with invalid email format', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: 'invalidemail', email: 'notanemail', password: '123456' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if register with short password', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: 'shortpass', email: 'shortpass@email.com', password: '1' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if register with missing username', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ email: 'nouser@example.com', password: 'testpass123' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if register with missing email', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: 'nouser', password: 'testpass123' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if register with missing password', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: 'nouser', email: 'nouser@example.com' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 409 if register with existing email', async () => {
+    // Register user first
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'uniqueuser', email: 'unique@example.com', password: 'testpass123' });
+    // Try register with same email
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: 'otheruser', email: 'unique@example.com', password: 'testpass123' });
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 409 if register with existing username', async () => {
+    // Register user first
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'uniqueuser2', email: 'unique2@example.com', password: 'testpass123' });
+    // Try register with same username
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: 'uniqueuser2', email: 'other2@example.com', password: 'testpass123' });
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty('error');
+  });
+
   it('should login with correct email and password', async () => {
     const res = await request(app)
       .post('/auth/login')
@@ -126,6 +192,38 @@ describe('Auth API', () => {
       .post('/auth/login')
       .send({ email: 'notfound@email.com', password: 'any' });
     expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if login with invalid email format', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: 'notanemail', password: '123456' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 401 if login with short password', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: testUser.email, password: '1' });
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if login with missing email', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ password: 'testpass123' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if login with missing password', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: 'nouser@example.com' });
+    expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
 });
