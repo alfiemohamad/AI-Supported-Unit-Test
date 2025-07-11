@@ -46,6 +46,12 @@ jobs:
         run: psql -h localhost -U testuser -d db-test -f migrations/001_create_users_lists_tasks.sql
       - name: Run unit tests
         run: npx jest --coverage
+      - name: Debug coverage file
+        run: |
+          echo "== List coverage directory =="
+          ls -lah coverage
+          echo "== Show first 40 lines of lcov.info =="
+          head -40 coverage/lcov.info
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
