@@ -8,6 +8,24 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: db-test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U testuser -d db-test" --health-interval=10s --health-timeout=5s --health-retries=5
+    env:
+      PGUSER: testuser
+      PGPASSWORD: testpass
+      PGDATABASE: db-test
+      PGHOST: localhost
+      PGPORT: 5432
+      NODE_ENV: test
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -15,7 +33,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+      - name: Wait for Postgres
+        run: |
+          for i in {1..10}; do
+            pg_isready -h localhost -p 5432 -U testuser && break
+            sleep 3
+          done
       - name: Install dependencies
         run: npm install
+      - name: Run migrations
+        run: psql -h localhost -U testuser -d db-test -f backend-api/migrations/001_create_users_lists_tasks.sql
       - name: Run unit tests
         run: npx jest --coverage
