@@ -11,7 +11,7 @@ export const memoryUserRepository = {
     return users.find(u => u.username === username) || null;
   },
   async findByEmail(email: string) {
-    return users.find(u => u.email === email) || null;
+    return this.users.find(u => u.email === email) || null;
   },
   async findById(id: number) {
     return users.find(u => u.id === id) || null;
