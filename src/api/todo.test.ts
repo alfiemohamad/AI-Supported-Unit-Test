@@ -447,4 +447,63 @@ describe('Todo API', () => {
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
+
+  it('should return 404 if get tasks in a list not owned by user', async () => {
+    // Register user3
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'taskother3', email: 'taskother3@example.com', password: 'testpass123' });
+    const resLogin = await request(app)
+      .post('/auth/login')
+      .send({ email: 'taskother3@example.com', password: 'testpass123' });
+    const token3 = resLogin.body.token;
+    // Buat list baru dengan user1
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Private List' });
+    const privateListId = listRes.body.id;
+    // Coba akses tasks di list user1 pakai token user3
+    const res = await request(app)
+      .get(`/lists/${privateListId}/tasks`)
+      .set('Authorization', `Bearer ${token3}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if create task in list not owned by user', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'taskother4', email: 'taskother4@example.com', password: 'testpass123' });
+    const resLogin = await request(app)
+      .post('/auth/login')
+      .send({ email: 'taskother4@example.com', password: 'testpass123' });
+    const token4 = resLogin.body.token;
+    // Buat list baru dengan user1
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Private List 2' });
+    const privateListId = listRes.body.id;
+    // Coba create task di list user1 pakai token user4
+    const res = await request(app)
+      .post(`/lists/${privateListId}/tasks`)
+      .set('Authorization', `Bearer ${token4}`)
+      .send({ title: 'Should Fail', description: '', completed: false });
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 400 if create task with missing title', async () => {
+    // Buat list baru
+    const listRes = await request(app)
+      .post('/lists')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'List for Missing Title' });
+    const listId2 = listRes.body.id;
+    const res = await request(app)
+      .post(`/lists/${listId2}/tasks`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ description: 'No title', completed: false });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
 });
