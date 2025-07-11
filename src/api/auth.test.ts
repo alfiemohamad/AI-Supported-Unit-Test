@@ -1,0 +1,131 @@
+import request from 'supertest';
+import express from 'express';
+import authRouter from './auth';
+import { pool } from '../repositories/sql/pg';
+
+describe('Auth API', () => {
+  const app = express();
+  app.use(express.json());
+  app.use('/auth', authRouter);
+
+  const testUser = {
+    username: 'testuser',
+    email: 'testuser@example.com',
+    password: 'testpass123',
+  };
+
+  afterAll(async () => {
+    await pool.query('DELETE FROM users WHERE email = $1', [testUser.email]);
+    await pool.end();
+  });
+
+  it('should register a new user', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send(testUser);
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('id');
+    expect(res.body).toHaveProperty('username', testUser.username);
+    expect(res.body).toHaveProperty('email', testUser.email);
+  });
+
+  it('should not register with duplicate email', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send(testUser);
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should not register with duplicate username', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ ...testUser, email: 'other@example.com' });
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 409 if email already exists (different username)', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: 'anotheruser', email: testUser.email, password: 'testpass123' });
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 409 if username already exists (different email)', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ username: testUser.username, email: 'unique@email.com', password: 'testpass123' });
+    expect(res.status).toBe(409);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if register missing fields', async () => {
+    const res1 = await request(app).post('/auth/register').send({ email: 'a@b.com', password: '123' });
+    expect(res1.status).toBe(400);
+    const res2 = await request(app).post('/auth/register').send({ username: 'a', password: '123' });
+    expect(res2.status).toBe(400);
+    const res3 = await request(app).post('/auth/register').send({ username: 'a', email: 'a@b.com' });
+    expect(res3.status).toBe(400);
+  });
+
+  it('should return 400 if register with empty body', async () => {
+    const res = await request(app).post('/auth/register').send({});
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should login with correct email and password', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: testUser.email, password: testUser.password });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
+  });
+
+  it('should not login with wrong password', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: testUser.email, password: 'wrongpass' });
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should not login with unregistered email', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: 'notfound@example.com', password: 'any' });
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if login missing fields', async () => {
+    const res1 = await request(app).post('/auth/login').send({ password: '123' });
+    expect(res1.status).toBe(400);
+    const res2 = await request(app).post('/auth/login').send({ email: 'a@b.com' });
+    expect(res2.status).toBe(400);
+  });
+
+  it('should return 400 if login with empty body', async () => {
+    const res = await request(app).post('/auth/login').send({});
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 401 if login with correct email but wrong password', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: testUser.email, password: 'incorrect' });
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 401 if login with non-existent email', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: 'notfound@email.com', password: 'any' });
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty('error');
+  });
+});

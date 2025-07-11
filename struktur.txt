@@ -1,0 +1,109 @@
+backend-api
+├── .env
+├── .gitignore
+├── backend-api
+│   ├── .env
+│   ├── migrations
+│   │   └── 001_create_users_lists_tasks.sql
+│   └── src
+│       ├── models
+│       │   ├── todo.ts
+│       │   └── user.ts
+│       └── repositories
+│           ├── memory
+│           │   ├── todoMemoryRepo.ts
+│           │   └── userMemoryRepo.ts
+│           └── sql
+│               ├── pg.ts
+│               ├── todoSqlRepo.ts
+│               └── userSqlRepo.ts
+├── dist-backend
+│   ├── api
+│   │   ├── app.js
+│   │   ├── auth.js
+│   │   ├── server.js
+│   │   ├── swagger.js
+│   │   └── todo.js
+│   ├── counter.js
+│   ├── main.js
+│   ├── models
+│   │   ├── todo.js
+│   │   └── user.js
+│   ├── repositories
+│   │   ├── memory
+│   │   │   ├── todoMemoryRepo.js
+│   │   │   └── userMemoryRepo.js
+│   │   └── sql
+│   │       ├── pg.js
+│   │       ├── todoSqlRepo.js
+│   │       └── userSqlRepo.js
+│   ├── services
+│   │   ├── listService.js
+│   │   ├── taskService.js
+│   │   └── userService.js
+│   └── utils
+│       └── auth.js
+├── docs
+│   ├── arsitektur.md
+│   ├── prd.md
+│   ├── tasks.md
+│   └── todo-api.postman_collection.json
+├── index.html
+├── migrations
+│   └── 001_create_users_lists_tasks.sql
+├── package-lock.json
+├── package.json
+├── public
+│   └── vite.svg
+├── README.md
+├── src
+│   ├── api
+│   │   ├── app.js
+│   │   ├── app.ts
+│   │   ├── auth.js
+│   │   ├── auth.ts
+│   │   ├── server.js
+│   │   ├── server.ts
+│   │   ├── swagger.js
+│   │   ├── swagger.ts
+│   │   ├── todo.js
+│   │   └── todo.ts
+│   ├── counter.js
+│   ├── counter.ts
+│   ├── main.js
+│   ├── main.ts
+│   ├── models
+│   │   ├── todo.js
+│   │   ├── todo.ts
+│   │   ├── user.js
+│   │   └── user.ts
+│   ├── repositories
+│   │   ├── memory
+│   │   │   ├── todoMemoryRepo.js
+│   │   │   ├── todoMemoryRepo.ts
+│   │   │   ├── userMemoryRepo.js
+│   │   │   └── userMemoryRepo.ts
+│   │   └── sql
+│   │       ├── pg.js
+│   │       ├── pg.ts
+│   │       ├── todoSqlRepo.js
+│   │       ├── todoSqlRepo.ts
+│   │       ├── userSqlRepo.js
+│   │       └── userSqlRepo.ts
+│   ├── services
+│   │   ├── listService.js
+│   │   ├── listService.ts
+│   │   ├── taskService.js
+│   │   ├── taskService.ts
+│   │   ├── userService.js
+│   │   └── userService.ts
+│   ├── style.css
+│   ├── typescript.svg
+│   ├── utils
+│   │   ├── auth.js
+│   │   └── auth.ts
+│   └── vite-env.d.ts
+├── struktur.txt
+└── tsconfig.json
+
+27 directories, 80 files

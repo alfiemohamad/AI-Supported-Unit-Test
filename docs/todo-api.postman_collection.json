@@ -1,0 +1,159 @@
+{
+  "info": {
+    "_postman_id": "binar-todo-api-collection-2025",
+    "name": "Secure To-Do List API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for Secure To-Do List API (JWT, CRUD, PostgreSQL)"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"user1\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/register", "host": [ "{{baseUrl}}" ], "path": [ "auth", "register" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"user1\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": [ "{{baseUrl}}" ], "path": [ "auth", "login" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Lists",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/lists", "host": [ "{{baseUrl}}" ], "path": [ "lists" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Create List",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"My List\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/lists", "host": [ "{{baseUrl}}" ], "path": [ "lists" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Get List by ID",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/lists/:id", "host": [ "{{baseUrl}}" ], "path": [ "lists", ":id" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Update List",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated List\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/lists/:id", "host": [ "{{baseUrl}}" ], "path": [ "lists", ":id" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete List",
+      "request": {
+        "method": "DELETE",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/lists/:id", "host": [ "{{baseUrl}}" ], "path": [ "lists", ":id" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Tasks in List",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/lists/:listId/tasks", "host": [ "{{baseUrl}}" ], "path": [ "lists", ":listId", "tasks" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Task in List",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"My Task\",\n  \"description\": \"desc\",\n  \"completed\": false\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/lists/:listId/tasks", "host": [ "{{baseUrl}}" ], "path": [ "lists", ":listId", "tasks" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Task by ID",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/tasks/:id", "host": [ "{{baseUrl}}" ], "path": [ "tasks", ":id" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Task",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated Task\",\n  \"description\": \"desc\",\n  \"completed\": true\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/tasks/:id", "host": [ "{{baseUrl}}" ], "path": [ "tasks", ":id" ] }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Task",
+      "request": {
+        "method": "DELETE",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/tasks/:id", "host": [ "{{baseUrl}}" ], "path": [ "tasks", ":id" ] }
+      },
+      "response": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
+  ]
+}

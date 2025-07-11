@@ -1,0 +1,114 @@
+import { Router, Request, Response } from 'express';
+import { sqlUserRepository } from '../repositories/sql/userSqlRepo';
+import { hashPassword, comparePassword, generateToken } from '../utils/auth';
+
+const router = Router();
+
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered
+ *       400:
+ *         description: Bad request
+ *       409:
+ *         description: Username or email already exists
+ */
+router.post('/register', async (req: Request, res: Response): Promise<void> => {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    res.status(400).json({ error: 'Username, email, and password required' });
+    return;
+  }
+  const existingUsername = await sqlUserRepository.findByUsername(username);
+  if (existingUsername) {
+    res.status(409).json({ error: 'Username already exists' });
+    return;
+  }
+  const existingEmail = await sqlUserRepository.findByEmail(email);
+  if (existingEmail) {
+    res.status(409).json({ error: 'Email already exists' });
+    return;
+  }
+  const hashed = await hashPassword(password);
+  const user = await sqlUserRepository.create({ username, email, password: hashed });
+  res.status(201).json({ id: user.id, username: user.username, email: user.email });
+});
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: User login
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: JWT token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Invalid credentials
+ */
+router.post('/login', async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    res.status(400).json({ error: 'Email and password required' });
+    return;
+  }
+  const user = await sqlUserRepository.findByEmail(email);
+  if (!user) {
+    res.status(401).json({ error: 'Invalid credentials' });
+    return;
+  }
+  const valid = await comparePassword(password, user.password);
+  if (!valid) {
+    res.status(401).json({ error: 'Invalid credentials' });
+    return;
+  }
+  const token = generateToken({ id: user.id, email: user.email });
+  res.json({ token });
+});
+
+export default router;
