@@ -312,4 +312,71 @@ describe('Todo API', () => {
       .send({ title: 'No Token', completed: true });
     expect(res.status).toBe(401);
   });
+
+  it('should return 404 if update list not owned by user', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'otheruser', email: 'otheruser@example.com', password: 'testpass123' });
+    const resLogin = await request(app)
+      .post('/auth/login')
+      .send({ email: 'otheruser@example.com', password: 'testpass123' });
+    const token2 = resLogin.body.token;
+    const res = await request(app)
+      .put(`/lists/${listId}`)
+      .set('Authorization', `Bearer ${token2}`)
+      .send({ name: 'Hacked' });
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if delete list not owned by user', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'otheruser2', email: 'otheruser2@example.com', password: 'testpass123' });
+    const resLogin = await request(app)
+      .post('/auth/login')
+      .send({ email: 'otheruser2@example.com', password: 'testpass123' });
+    const token2 = resLogin.body.token;
+    const res = await request(app)
+      .delete(`/lists/${listId}`)
+      .set('Authorization', `Bearer ${token2}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if get list by id not owned by user', async () => {
+    await request(app)
+      .post('/auth/register')
+      .send({ username: 'otheruser3', email: 'otheruser3@example.com', password: 'testpass123' });
+    const resLogin = await request(app)
+      .post('/auth/login')
+      .send({ email: 'otheruser3@example.com', password: 'testpass123' });
+    const token2 = resLogin.body.token;
+    const res = await request(app)
+      .get(`/lists/${listId}`)
+      .set('Authorization', `Bearer ${token2}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if update non-existent list', async () => {
+    const res = await request(app)
+      .put('/lists/999999')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Not Exist' });
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 404 if delete non-existent list', async () => {
+    const res = await request(app)
+      .delete('/lists/999999')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('should return 400 if update list with missing name', async () => {
+    const res = await request(app)
+      .put(`/lists/${listId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
 });
