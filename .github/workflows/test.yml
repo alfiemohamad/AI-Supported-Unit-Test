@@ -45,3 +45,8 @@ jobs:
         run: psql -h localhost -U testuser -d db-test -f migrations/001_create_users_lists_tasks.sql
       - name: Run unit tests
         run: npx jest --coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: true
