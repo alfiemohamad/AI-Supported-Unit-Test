@@ -1,5 +1,9 @@
-backend-api
+./AI-Supported-Unit-Test
+├── .codecov.yml
 ├── .env
+├── .github
+│   └── workflows
+│       └── test.yml
 ├── .gitignore
 ├── backend-api
 │   ├── .env
@@ -17,6 +21,69 @@ backend-api
 │               ├── pg.ts
 │               ├── todoSqlRepo.ts
 │               └── userSqlRepo.ts
+├── coverage
+│   ├── api
+│   │   ├── auth.ts.html
+│   │   ├── index.html
+│   │   └── todo.ts.html
+│   ├── base.css
+│   ├── block-navigation.js
+│   ├── clover.xml
+│   ├── coverage-final.json
+│   ├── favicon.png
+│   ├── index.html
+│   ├── lcov-report
+│   │   ├── api
+│   │   │   ├── auth.js.html
+│   │   │   ├── index.html
+│   │   │   └── todo.js.html
+│   │   ├── base.css
+│   │   ├── block-navigation.js
+│   │   ├── favicon.png
+│   │   ├── index.html
+│   │   ├── prettify.css
+│   │   ├── prettify.js
+│   │   ├── repositories
+│   │   │   ├── memory
+│   │   │   │   ├── index.html
+│   │   │   │   ├── todoMemoryRepo.js.html
+│   │   │   │   └── userMemoryRepo.js.html
+│   │   │   └── sql
+│   │   │       ├── index.html
+│   │   │       ├── pg.ts.html
+│   │   │       ├── todoSqlRepo.ts.html
+│   │   │       └── userSqlRepo.ts.html
+│   │   ├── services
+│   │   │   ├── index.html
+│   │   │   ├── listService.ts.html
+│   │   │   └── taskService.ts.html
+│   │   ├── sort-arrow-sprite.png
+│   │   ├── sorter.js
+│   │   └── utils
+│   │       ├── auth.ts.html
+│   │       └── index.html
+│   ├── lcov.info
+│   ├── prettify.css
+│   ├── prettify.js
+│   ├── repositories
+│   │   ├── memory
+│   │   │   ├── index.html
+│   │   │   ├── todoMemoryRepo.ts.html
+│   │   │   └── userMemoryRepo.ts.html
+│   │   └── sql
+│   │       ├── index.html
+│   │       ├── pg.ts.html
+│   │       ├── todoSqlRepo.ts.html
+│   │       └── userSqlRepo.ts.html
+│   ├── services
+│   │   ├── index.html
+│   │   ├── listService.ts.html
+│   │   └── taskService.ts.html
+│   ├── sort-arrow-sprite.png
+│   ├── sorter.js
+│   └── utils
+│       ├── auth.ts.html
+│       └── index.html
 ├── dist-backend
 │   ├── api
 │   │   ├── app.js
@@ -45,12 +112,67 @@ backend-api
 │       └── auth.js
 ├── docs
 │   ├── arsitektur.md
+│   ├── open-api-spec.json
 │   ├── prd.md
 │   ├── tasks.md
 │   └── todo-api.postman_collection.json
-├── index.html
+├── fe-to-do-list
+│   ├── .DS_Store
+│   ├── .github
+│   │   └── copilot-instructions.md
+│   ├── .gitignore
+│   ├── docs
+│   │   └── tasks.md
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   │   ├── assets
+│   │   │   └── .gitkeep
+│   │   └── vite.svg
+│   ├── README.md
+│   ├── src
+│   │   ├── api
+│   │   │   ├── .gitkeep
+│   │   │   ├── auth.ts
+│   │   │   └── lists.ts
+│   │   ├── App.css
+│   │   ├── App.tsx
+│   │   ├── assets
+│   │   │   └── react.svg
+│   │   ├── components
+│   │   │   ├── .gitkeep
+│   │   │   ├── AddListForm.tsx
+│   │   │   ├── AddTaskForm.tsx
+│   │   │   ├── AuthForm.tsx
+│   │   │   ├── EditableListItem.tsx
+│   │   │   ├── EditableTaskItem.tsx
+│   │   │   ├── MainLayout.tsx
+│   │   │   └── ProtectedRoute.tsx
+│   │   ├── hooks
+│   │   │   └── .gitkeep
+│   │   ├── index.css
+│   │   ├── main.tsx
+│   │   ├── pages
+│   │   │   ├── .gitkeep
+│   │   │   ├── ListsPage.tsx
+│   │   │   ├── LoginPage.tsx
+│   │   │   ├── RegisterPage.tsx
+│   │   │   └── TasksPage.tsx
+│   │   ├── theme
+│   │   │   └── .gitkeep
+│   │   ├── utils
+│   │   │   └── .gitkeep
+│   │   └── vite-env.d.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── jest.config.js
 ├── migrations
-│   └── 001_create_users_lists_tasks.sql
+│   ├── 001_create_users_lists_tasks.sql
+│   └── 002_add_email_to_users.sql
 ├── package-lock.json
 ├── package.json
 ├── public
@@ -61,12 +183,14 @@ backend-api
 │   │   ├── app.js
 │   │   ├── app.ts
 │   │   ├── auth.js
+│   │   ├── auth.test.ts
 │   │   ├── auth.ts
 │   │   ├── server.js
 │   │   ├── server.ts
 │   │   ├── swagger.js
 │   │   ├── swagger.ts
 │   │   ├── todo.js
+│   │   ├── todo.test.ts
 │   │   └── todo.ts
 │   ├── counter.js
 │   ├── counter.ts
@@ -80,30 +204,31 @@ backend-api
 │   ├── repositories
 │   │   ├── memory
 │   │   │   ├── todoMemoryRepo.js
+│   │   │   ├── todoMemoryRepo.test.ts
 │   │   │   ├── todoMemoryRepo.ts
 │   │   │   ├── userMemoryRepo.js
+│   │   │   ├── userMemoryRepo.test.ts
 │   │   │   └── userMemoryRepo.ts
 │   │   └── sql
-│   │       ├── pg.js
+│   │       ├── pg.test.ts
 │   │       ├── pg.ts
-│   │       ├── todoSqlRepo.js
+│   │       ├── todoSqlRepo.test.ts
 │   │       ├── todoSqlRepo.ts
-│   │       ├── userSqlRepo.js
+│   │       ├── userSqlRepo.test.ts
 │   │       └── userSqlRepo.ts
 │   ├── services
-│   │   ├── listService.js
+│   │   ├── listService.test.ts
 │   │   ├── listService.ts
-│   │   ├── taskService.js
+│   │   ├── taskService.test.ts
 │   │   ├── taskService.ts
-│   │   ├── userService.js
 │   │   └── userService.ts
 │   ├── style.css
 │   ├── typescript.svg
 │   ├── utils
-│   │   ├── auth.js
+│   │   ├── auth.test.ts
 │   │   └── auth.ts
 │   └── vite-env.d.ts
 ├── struktur.txt
 └── tsconfig.json
 
-27 directories, 80 files
+56 directories, 176 files

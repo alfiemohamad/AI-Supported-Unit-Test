@@ -10,7 +10,7 @@ describe('Auth API', () => {
 
   const testUser = {
     username: 'testuser',
-    email: 'testuser@example.com',
+    email: 'testuser@email.com',
     password: 'testpass123',
   };
 
@@ -40,7 +40,7 @@ describe('Auth API', () => {
   it('should not register with duplicate username', async () => {
     const res = await request(app)
       .post('/auth/register')
-      .send({ ...testUser, email: 'other@example.com' });
+      .send({ ...testUser, email: 'other@email.com' });
     expect(res.status).toBe(409);
     expect(res.body).toHaveProperty('error');
   });
@@ -62,18 +62,12 @@ describe('Auth API', () => {
   });
 
   it('should return 400 if register missing fields', async () => {
-    const res1 = await request(app).post('/auth/register').send({ email: 'a@b.com', password: '123' });
+    const res1 = await request(app).post('/auth/register').send({});
     expect(res1.status).toBe(400);
     const res2 = await request(app).post('/auth/register').send({ username: 'a', password: '123' });
     expect(res2.status).toBe(400);
     const res3 = await request(app).post('/auth/register').send({ username: 'a', email: 'a@b.com' });
     expect(res3.status).toBe(400);
-  });
-
-  it('should return 400 if register with empty body', async () => {
-    const res = await request(app).post('/auth/register').send({});
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('error');
   });
 
   it('should return 400 if register with invalid email format', async () => {
@@ -92,18 +86,18 @@ describe('Auth API', () => {
     expect(res.body).toHaveProperty('error');
   });
 
-  it('should return 400 if register with missing username', async () => {
-    const res = await request(app)
-      .post('/auth/register')
-      .send({ email: 'nouser@example.com', password: 'testpass123' });
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('error');
-  });
-
   it('should return 400 if register with missing email', async () => {
     const res = await request(app)
       .post('/auth/register')
       .send({ username: 'nouser', password: 'testpass123' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if register with missing username', async () => {
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ email: 'nouser@example.com', password: 'testpass123' });
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });

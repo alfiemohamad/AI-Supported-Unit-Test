@@ -37,18 +37,30 @@ const router = Router();
  */
 router.post('/register', async (req: Request, res: Response): Promise<void> => {
   const { username, email, password } = req.body;
-  if (!username || !email || !password) {
-    res.status(400).json({ error: 'All fields are required' });
+  // Validasi field wajib
+  if (!username || typeof username !== 'string' || !username.trim()) {
+    res.status(400).json({ error: 'Username is required' });
     return;
   }
+  if (!email || typeof email !== 'string' || !email.trim()) {
+    res.status(400).json({ error: 'Email is required' });
+    return;
+  }
+  if (!password || typeof password !== 'string') {
+    res.status(400).json({ error: 'Password is required' });
+    return;
+  }
+  // Validasi format email
   if (!/^\S+@\S+\.\S+$/.test(email)) {
     res.status(400).json({ error: 'Invalid email format' });
     return;
   }
+  // Validasi panjang password
   if (password.length < 6) {
     res.status(400).json({ error: 'Password too short' });
     return;
   }
+  // Cek duplikasi username/email
   const existingUsername = await sqlUserRepository.findByUsername(username);
   if (existingUsername) {
     res.status(409).json({ error: 'Username already exists' });
@@ -101,10 +113,16 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
  */
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password required' });
+  // Validasi field wajib
+  if (!email || typeof email !== 'string' || !email.trim()) {
+    res.status(400).json({ error: 'Email is required' });
     return;
   }
+  if (!password || typeof password !== 'string') {
+    res.status(400).json({ error: 'Password is required' });
+    return;
+  }
+  // Validasi format email
   if (!/^\S+@\S+\.\S+$/.test(email)) {
     res.status(400).json({ error: 'Invalid email format' });
     return;
@@ -114,6 +132,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
     res.status(401).json({ error: 'Invalid credentials' });
     return;
   }
+  // Validasi panjang password (opsional, untuk konsistensi)
   if (password.length < 6) {
     res.status(401).json({ error: 'Invalid credentials' });
     return;

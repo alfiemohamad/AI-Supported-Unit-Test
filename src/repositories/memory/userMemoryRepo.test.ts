@@ -2,8 +2,7 @@ import { memoryUserRepository } from './userMemoryRepo';
 
 describe('memoryUserRepository', () => {
   beforeEach(() => {
-    // @ts-ignore
-    memoryUserRepository['users'] = [];
+    memoryUserRepository.reset();
   });
 
   it('should create a user', async () => {
